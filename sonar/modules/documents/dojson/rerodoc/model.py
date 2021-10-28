@@ -63,15 +63,20 @@ def marc21_to_type_and_organisation(self, key, value):
     if value.get('b'):
         organisation = value.get('b').lower()
 
+        subdivision_name = None
+
         # Specific transformation for `unisi`, because the real acronym is
         # `usi`.
         if organisation == 'unisi':
             organisation = 'usi'
 
+        # Add `hepfr` publications to `unifr`
+        if organisation == 'hepfr':
+            organisation = 'unifr'
+            subdivision_name = 'HEP Fribourg'
+
         # Specific transformation for `bpuge` and `mhnge`, because the real
         # acronym is `vge`.
-        subdivision_name = None
-
         if organisation in [
                 'bpuge', 'mhnge', 'baage', 'bmuge', 'imvge', 'mhsge'
         ]:
