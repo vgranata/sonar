@@ -111,6 +111,7 @@ class DocumentMetadataSchemaV1(StrictKeysMixin):
     _bucket = SanitizedUnicode()
     _files = Nested(FileSchemaV1, many=True)
     _oai = fields.Dict()
+    statistics = fields.Dict()
     # When loading, if $schema is not provided, it's retrieved by
     # Record.schema property.
     schema = GenFunction(load_only=True,
@@ -193,6 +194,18 @@ class DocumentMetadataSchemaV1(StrictKeysMixin):
         if item.get('dissertation'):
             item['dissertation']['text'] = dissertation(item)
 
+        return item
+
+    @pre_dump
+    def populate_record_statistics(self, item, **kwargs):
+        """Add record statistics before dumping it.
+
+        :param item: Item object to process
+        :returns: Modified item
+        """
+        record = DocumentRecord.get_record_by_pid(item['pid'])
+        if record:
+            item['statistics'] = record.statistics
         return item
 
     @pre_load
